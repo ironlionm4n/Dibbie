@@ -19,19 +19,28 @@ public class PlayerInputs : MonoBehaviour
     private void OnEnable()
     {
         _playerActionAsset.PlayerInputsMap.Enable();
-    }
-
-    private void Update()
-    {
-        if (_playerActionAsset.PlayerInputsMap.PlayerMovement.IsPressed())
-        {
-            onPlayerMove?.Invoke(_playerActionAsset.PlayerInputsMap.PlayerMovement.ReadValue<Vector2>());
-        }
+        _playerActionAsset.PlayerInputsMap.PlayerMovement.canceled += OnInputCancelled;
     }
 
     private void OnDisable()
     {
         _playerActionAsset.PlayerInputsMap.Disable();
+        _playerActionAsset.PlayerInputsMap.PlayerMovement.canceled -= OnInputCancelled;
     }
+    
+    private void Update()
+    {
+        
+        if (_playerActionAsset.PlayerInputsMap.PlayerMovement.IsPressed())
+        {
+            onPlayerMove?.Invoke(_playerActionAsset.PlayerInputsMap.PlayerMovement.ReadValue<Vector2>());
+        }
+    }
+    private void OnInputCancelled(InputAction.CallbackContext obj)
+    {
+        Debug.Log(obj.ReadValue<Vector2>());
+        onPlayerMove?.Invoke(Vector2.zero);
+    }
+
     
 }
